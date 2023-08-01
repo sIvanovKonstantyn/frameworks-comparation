@@ -1,0 +1,22 @@
+spring:
+  kafka:
+    bootstrap-servers: 'localhost:9092'
+  application:
+    name: task-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+management:
+  endpoints.web.exposure.include: '*' # health,info,prometheus
+  metrics.distribution.percentiles-histogram.http.server.requests: true
+  tracing:
+    enabled: true
+    sampling.probability: 1.0
+  zipkin.tracing.endpoint: http://localhost:9411/api/v2/spans
+logging.pattern.level: "trace_id=%mdc{traceId} span_id=%mdc{spanId} trace_flags=%mdc{traceFlags} %p"
