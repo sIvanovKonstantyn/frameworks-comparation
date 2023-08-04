@@ -13,5 +13,5 @@ public class TaskEntity {
     @Column
     private String description;
     @Column
-    private Long userId;
+    private String userId;
 }

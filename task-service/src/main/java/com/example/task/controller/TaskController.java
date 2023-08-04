@@ -63,7 +63,9 @@ public class TaskController {
     }
 
     private void pushUpdateEvent(TaskEntity task) {
-
+        if (task.getUserId() == null) {
+            return;
+        }
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>(
                 "task-updates",
                 null,
@@ -78,6 +80,7 @@ public class TaskController {
     private String prepareMessage(TaskEntity savedTask) {
         HashMap<String, String> message = new HashMap<>();
         message.put("id", savedTask.getId().toString());
+        message.put("userId", savedTask.getUserId());
         try {
             return objectMapper.writeValueAsString(message);
         } catch (JsonProcessingException e) {
