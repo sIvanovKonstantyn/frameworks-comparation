@@ -1,22 +1,64 @@
-spring:
-  kafka:
-    bootstrap-servers: 'localhost:9092'
-  application:
-    name: task-service
-  datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: create
+zipkin:
+  # Required properties
+  # Whether tracing is enabled or not (defaults to true)
+  enabled: true
+  # Listening IP address of the service
+  serviceHost: 192.168.1.100
+  # Listening port of the service
+  servicePort: 8080
 
-management:
-  endpoints.web.exposure.include: '*' # health,info,prometheus
-  metrics.distribution.percentiles-histogram.http.server.requests: true
-  tracing:
-    enabled: true
-    sampling.probability: 1.0
-  zipkin.tracing.endpoint: http://localhost:9411/api/v2/spans
-logging.pattern.level: "trace_id=%mdc{traceId} span_id=%mdc{spanId} trace_flags=%mdc{traceFlags} %p"
+  # Optional properties
+  # Span collector to use (console, http, kafka or empty)
+  collector: http
+  # If using the http collector, provide the baseUrl
+  baseUrl: http://127.0.0.1:9411/
+  # If using the http collector, timeout out when connecting (defaults to 10s)
+  connectTimeout: 10s
+  # If using the http collector, timeout out when reading the response (defaults to 60s)
+  readTimeout: 60s
+
+database:
+  # the name of your JDBC driver
+  driverClass: org.postgresql.Driver
+
+  # the username
+  user: postgres
+
+  # the password
+  password: postgres
+
+  # the JDBC URL
+  url: jdbc:postgresql://localhost:5432/postgres
+
+  # any properties specific to your JDBC driver:
+  properties:
+    charSet: UTF-8
+    hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate.hbm2ddl.auto: create
+
+  # the maximum amount of time to wait on an empty pool before throwing an exception
+  maxWaitForConnection: 1s
+
+  # the SQL query to run when validating a connection's liveness
+  validationQuery: "/* TaskService Health Check */ SELECT 1"
+
+  # the minimum number of connections to keep open
+  minSize: 8
+
+  # the maximum number of connections to keep open
+  maxSize: 32
+
+  # whether or not idle connections should be validated
+  checkConnectionWhileIdle: false
+
+producer:
+  type: basic
+  bootstrapServers:
+    - 127.0.0.1:9092
+  name: producerNameToBeUsedInMetrics
+  keySerializer:
+    type: string
+  valueSerializer:
+    type: string
+  maxInFlightRequestsPerConnection: 1
+  maxPollBlockTime: 10s
