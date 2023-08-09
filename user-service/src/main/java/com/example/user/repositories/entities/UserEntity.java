@@ -1,25 +1,22 @@
-package com.example.user.repository.entities;
+package com.example.user.repositories.entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Document(collection = "users")
 @Data
+@AllArgsConstructor
 public class UserEntity {
-    @Id
     private String id;
     private String name;
     private List<Long> taskIds;
 
     public List<Long> getTaskIds() {
         if (taskIds == null) {
-            taskIds =  new ArrayList<>();
+            taskIds = new ArrayList<>();
         }
-
         return taskIds;
     }
 }

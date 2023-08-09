@@ -1,31 +1,41 @@
 server:
-  port: 8081
+  applicationConnectors:
+    - type: http
+      port: 8082
+  adminConnectors:
+    - type: http
+      port: 8083
 
-spring:
-  kafka:
-    bootstrap-servers: 'localhost:9092'
-  cloud:
-    openfeign:
-      circuitbreaker:
-        enabled: true
-    circuitbreaker:
-      resilience4j:
-        blocking:
-          enable: true
+zipkin:
+  # Required properties
+  # Whether tracing is enabled or not (defaults to true)
+  enabled: true
+  # Listening IP address of the service
+  serviceHost: 192.168.1.100
+  # Listening port of the service
+  servicePort: 8082
 
-management:
-  endpoints.web.exposure.include: '*' # health,info,prometheus
-  metrics.distribution.percentiles-histogram.http.server.requests: true
-  tracing:
-    enabled: true
-    sampling.probability: 1.0
-  zipkin.tracing.endpoint: http://localhost:9411/api/v2/spans
-logging.pattern.level: "trace_id=%mdc{traceId} span_id=%mdc{spanId} trace_flags=%mdc{traceFlags} %p"
+  # Optional properties
+  # Span collector to use (console, http, kafka or empty)
+  collector: http
+  # If using the http collector, provide the baseUrl
+  baseUrl: http://127.0.0.1:9411/
+  # If using the http collector, timeout out when connecting (defaults to 10s)
+  connectTimeout: 10s
+  # If using the http collector, timeout out when reading the response (defaults to 60s)
+  readTimeout: 60s
 
-app:
-  mongo:
-    uri: "mongodb://localhost:27017"
-    database: "users"
-  clients:
-    task-service:
-      url: "http://localhost:8080"
+mongoUrl: 'mongodb://localhost:27017'
+
+consumer:
+  type: basic
+  bootstrapServers:
+    - 127.0.0.1:9092
+  consumerGroupId: user-service
+  name: consumerNameToBeUsedInMetrics
+  keyDeserializer:
+    type: string
+  valueDeserializer:
+    type: string
+
+taskServiceUrl: 'http://localhost:8080'

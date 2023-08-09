@@ -1,7 +1,10 @@
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.1.2'
-    id 'io.spring.dependency-management' version '1.1.2'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = 'com.example'
@@ -11,39 +14,48 @@ java {
     sourceCompatibility = '17'
 }
 
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
 repositories {
     mavenCentral()
 }
 
-ext {
-    set('springCloudVersion', "2022.0.3")
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-    }
-}
-
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'io.dropwizard:dropwizard-core:2.1.4'
+    implementation 'javax.ws.rs:javax.ws.rs-api:2.1.1'
 
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation(platform("io.micrometer:micrometer-tracing-bom:1.0.0"))
-    implementation("io.micrometer:micrometer-tracing")
-    implementation("io.micrometer:micrometer-tracing-bridge-otel")
-    implementation("io.opentelemetry:opentelemetry-exporter-zipkin")
-    implementation("org.springframework.boot:spring-boot-starter-aop")
 
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'com.smoketurner.dropwizard:zipkin-core:2.0.16-1'
+
+
+    implementation 'org.mongodb:mongodb-driver-sync:4.10.2'
+
+    //message broker
+    implementation 'io.dropwizard.modules:dropwizard-kafka:1.8.1'
+
+    implementation 'io.github.openfeign:feign-core:12.4'
+    implementation 'io.github.openfeign:feign-gson:12.4'
 
     //other
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
+shadowJar {
+    mergeServiceFiles()
+    exclude 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/*.SF'
+    manifest {
+        attributes 'Implementation-Title': rootProject.name
+        attributes 'Implementation-Version': rootProject.version
+        attributes 'Implementation-Vendor-Id': rootProject.group
+        attributes 'Build-Time': ZonedDateTime.now(ZoneId.of("UTC"))
+                .format(DateTimeFormatter.ISO_ZONED_DATE_TIME)
+        attributes 'Built-By': InetAddress.localHost.hostName
+        attributes 'Created-By': 'Gradle ' + gradle.gradleVersion
+        attributes 'Main-Class': 'com.example.user.UserServiceApplication'
+    }
 }

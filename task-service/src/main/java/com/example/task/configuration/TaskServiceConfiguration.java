@@ -20,8 +20,6 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public class TaskServiceConfiguration extends Configuration {
-    @NotEmpty
-    private String defaultName = "Stranger";
     @NotNull
     public final ZipkinFactory zipkin = new ConsoleZipkinFactory();
 
@@ -86,16 +84,6 @@ public class TaskServiceConfiguration extends Configuration {
     @JsonProperty("database")
     public void setDataSourceFactory(DataSourceFactory dataSourceFactory) {
         this.database = dataSourceFactory;
-    }
-
-    @JsonProperty
-    public String getDefaultName() {
-        return defaultName;
-    }
-
-    @JsonProperty
-    public void setDefaultName(String name) {
-        this.defaultName = name;
     }
 
     @JsonProperty
