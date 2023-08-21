@@ -26,6 +26,8 @@ dependencies {
 
     implementation 'io.quarkus:quarkus-resteasy'
     implementation 'io.quarkus:quarkus-resteasy-jackson'
+    implementation 'io.quarkus:quarkus-spring-data-jpa'
+    implementation 'org.postgresql:postgresql:42.6.0'
 
     //other
     compileOnly 'org.projectlombok:lombok:1.18.24'
