@@ -28,6 +28,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-resteasy-jackson'
     implementation 'io.quarkus:quarkus-spring-data-jpa'
     implementation 'org.postgresql:postgresql:42.6.0'
+    implementation 'io.quarkus:quarkus-smallrye-reactive-messaging-kafka'
 
     //other
     compileOnly 'org.projectlombok:lombok:1.18.24'
