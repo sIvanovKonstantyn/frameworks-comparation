@@ -30,6 +30,9 @@ dependencies {
     implementation 'org.postgresql:postgresql:42.6.0'
     implementation 'io.quarkus:quarkus-smallrye-reactive-messaging-kafka'
 
+    implementation 'io.zipkin.brave:brave:5.16.0'
+    implementation 'io.zipkin.reporter2:zipkin-sender-okhttp3:2.16.0'
+
     //other
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'

@@ -1,10 +1,14 @@
 package com.example.task.controller;
 
+import brave.ScopedSpan;
+import brave.Span;
+import brave.Tracer;
 import com.example.task.model.Task;
 import com.example.task.repository.TaskRepository;
 import com.example.task.repository.entities.TaskEntity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -21,6 +25,7 @@ import java.util.Map;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Slf4j
+@RequestScoped
 public class TaskController {
 
     @Inject
@@ -33,23 +38,43 @@ public class TaskController {
     @Inject
     private ObjectMapper mapper;
 
+    @Inject
+    private Tracer tracer;
+
     // Get all tasks
     @GET
     public List<Task> getAll() {
-        return taskRepository.findAll().stream()
+
+        ScopedSpan span = tracer.startScopedSpan("task-controller getAll");
+
+        Span repoSpan = tracer.newChild(span.context()).name("task-repository findAll").start();
+        List<TaskEntity> entities = taskRepository.findAll();
+        repoSpan.finish();
+
+        var tasks = entities.stream()
                 .map(taskEntity -> new Task(taskEntity.getId(), taskEntity.getDescription(), taskEntity.getUserId()))
                 .toList();
+
+        span.finish();
+
+        return tasks;
     }
 
     // Create a new task
     @POST
     public Response save(Task task) {
+        ScopedSpan span = tracer.startScopedSpan("task-controller save");
+
         var taskEntity = new TaskEntity();
         taskEntity.setDescription(task.description());
         taskEntity.setUserId(task.userId());
+        Span repoSpan = tracer.newChild(span.context()).name("task-repository save").start();
         var savedEntity = taskRepository.save(taskEntity);
+        repoSpan.finish();
 
         updateUserTasks(savedEntity);
+
+        span.finish();
 
         return Response
                 .created(null)
