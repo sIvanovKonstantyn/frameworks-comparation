@@ -26,6 +26,10 @@ dependencies {
 
     implementation 'io.quarkus:quarkus-resteasy'
     implementation 'io.quarkus:quarkus-resteasy-jackson'
+    implementation 'io.quarkus:quarkus-mongodb-client'
+
+    implementation 'io.zipkin.brave:brave:5.16.0'
+    implementation 'io.zipkin.reporter2:zipkin-sender-okhttp3:2.16.0'
 
     //other
     compileOnly 'org.projectlombok:lombok:1.18.24'

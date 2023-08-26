@@ -1,8 +1,12 @@
 package com.example.user.controller;
 
+import brave.ScopedSpan;
+import brave.Tracer;
 import com.example.user.model.User;
 import com.example.user.model.UserTask;
+import com.example.user.service.UserService;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -17,23 +21,37 @@ import java.util.List;
 @RequestScoped
 public class UserController {
 
-    // Get all users
+    @Inject
+    private UserService userService;
+
+    @Inject
+    private Tracer tracer;
+
     @GET
     public List<User> getAll() {
-        return List.of();
+        ScopedSpan span = tracer.startScopedSpan("user-controller getAll");
+        List<User> users = userService.getAll();
+        span.finish();
+        return users;
     }
 
     @GET
     public List<UserTask> getAllUsersTasks() {
-        return List.of();
+        ScopedSpan span = tracer.startScopedSpan("user-controller getAllUsersTasks");
+        List<UserTask> userTasks = List.of();
+        span.finish();
+        return userTasks;
     }
 
     // Create a new user
     @POST
     public Response save(User user) {
+        ScopedSpan span = tracer.startScopedSpan("user-controller save");
+        User savedUser = userService.save(user);
+        span.finish();
         return Response
                 .created(null)
-                .entity(user)
+                .entity(savedUser)
                 .build();
     }
 }
