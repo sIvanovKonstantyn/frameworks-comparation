@@ -30,4 +30,10 @@ public class UserService {
         UserEntity savedUser = userRepository.save(new UserEntity(user.id(), user.name(), user.taskIds()));
         return new User(savedUser.getId(), savedUser.getName(), savedUser.getTaskIds());
     }
+
+    public void updateTaskList(String userId, String taskId) {
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow();
+        userEntity.getTaskIds().add(Long.parseLong(taskId));
+        userRepository.update(userEntity);
+    }
 }

@@ -38,7 +38,7 @@ public class UserController {
     @GET
     public List<UserTask> getAllUsersTasks() {
         ScopedSpan span = tracer.startScopedSpan("user-controller getAllUsersTasks");
-        List<UserTask> userTasks = List.of();
+        List<UserTask> userTasks = userService.getAllUsersTasks();
         span.finish();
         return userTasks;
     }
