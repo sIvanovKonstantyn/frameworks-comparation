@@ -1,5 +1,7 @@
 package com.example.user.service;
 
+import com.example.user.client.TaskServiceClient;
+import com.example.user.client.entities.Task;
 import com.example.user.model.User;
 import com.example.user.model.UserTask;
 import com.example.user.repository.UserRepository;
@@ -15,6 +17,9 @@ public class UserService {
     @Inject
     private UserRepository userRepository;
 
+    @Inject
+    private TaskServiceClient taskServiceClient;
+
     public List<User> getAll() {
         return userRepository.findAll()
                 .stream()
@@ -23,7 +28,20 @@ public class UserService {
     }
 
     public List<UserTask> getAllUsersTasks() {
-        return List.of();
+        List<User> users = getAll();
+        List<Task> tasks = taskServiceClient.getAll();
+
+        return users.stream()
+                .map(user -> new UserTask(
+                                user.id(),
+                                user.name(),
+                                tasks.stream()
+                                        .filter(task -> user.taskIds().contains(task.id()))
+                                        .map(Task::description)
+                                        .toList()
+                        )
+                )
+                .toList();
     }
 
     public User save(User user) {
