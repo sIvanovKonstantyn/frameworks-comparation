@@ -1,7 +1,11 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.1.2'
-    id 'io.spring.dependency-management' version '1.1.2'
+    id 'io.quarkus'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
 }
 
 group = 'com.example'
@@ -11,39 +15,19 @@ java {
     sourceCompatibility = '17'
 }
 
-repositories {
-    mavenCentral()
-}
-
-ext {
-    set('springCloudVersion', "2022.0.3")
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
     }
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.kafka:spring-kafka'
+    implementation(enforcedPlatform("io.quarkus.platform:quarkus-bom:3.2.3.Final"))
 
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation(platform("io.micrometer:micrometer-tracing-bom:1.0.0"))
-    implementation("io.micrometer:micrometer-tracing")
-    implementation("io.micrometer:micrometer-tracing-bridge-otel")
-    implementation("io.opentelemetry:opentelemetry-exporter-zipkin")
-    implementation("org.springframework.boot:spring-boot-starter-aop")
-
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'io.quarkus:quarkus-resteasy'
+    implementation 'io.quarkus:quarkus-resteasy-jackson'
 
     //other
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }

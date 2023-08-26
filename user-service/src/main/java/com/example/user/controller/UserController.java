@@ -2,43 +2,38 @@ package com.example.user.controller;
 
 import com.example.user.model.User;
 import com.example.user.model.UserTask;
-import com.example.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/users")
+@Path("/users")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+@Slf4j
+@RequestScoped
 public class UserController {
 
-    private final UserService userService;
-
-
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
     // Get all users
-    @GetMapping
+    @GET
     public List<User> getAll() {
-        return userService.getAll();
+        return List.of();
     }
 
-    @GetMapping("/tasks")
+    @GET
     public List<UserTask> getAllUsersTasks() {
-        return userService.getAllUsersTasks();
+        return List.of();
     }
 
     // Create a new user
-    @PostMapping
-    public ResponseEntity<User> save(@RequestBody User user) {
-        return new ResponseEntity<>(
-                userService.save(user),
-                HttpStatus.CREATED
-        );
+    @POST
+    public Response save(User user) {
+        return Response
+                .created(null)
+                .entity(user)
+                .build();
     }
 }
