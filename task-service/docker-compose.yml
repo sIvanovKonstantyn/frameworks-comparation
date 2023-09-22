@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+  app:
+    image: 'testapp:latest'
+    build:
+      context: .
+    container_name: app
+    depends_on:
+      - db
+    mem_limit: 768m
+    ports:
+      - '8080:8080'
+  db:
+    image: 'postgres:13.1-alpine'
+    container_name: db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
