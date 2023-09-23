@@ -1,4 +1,9 @@
-FROM openjdk:17-alpine
+# for intel:
+# FROM openjdk:17-alpine
+
+# for M1 mac:
+FROM bellsoft/liberica-openjdk-alpine-musl:17
+
 ARG JAR_FILE=/build/libs/task-service-0.0.1-SNAPSHOT.jar
 COPY ${JAR_FILE} application.jar
 #UseEpsilonGC:
