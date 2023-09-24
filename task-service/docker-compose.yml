@@ -9,6 +9,7 @@ services:
     depends_on:
       - db
     mem_limit: 1g
+    cpus: 2
     ports:
       - '8080:8080'
   db:
