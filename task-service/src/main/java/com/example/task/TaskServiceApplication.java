@@ -1,48 +1,26 @@
 package com.example.task;
 
-import com.example.task.configuration.BundleConfigurationFactory;
-import com.example.task.configuration.BundleConfiguration;
-import com.example.task.configuration.TaskServiceConfiguration;
-import com.example.task.configuration.TaskServiceConfiguration.DependencyInjectionBundle;
-import io.dropwizard.Application;
-import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
-import io.dropwizard.configuration.SubstitutingSourceProvider;
-import io.dropwizard.setup.Bootstrap;
-import io.dropwizard.setup.Environment;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.SeBootstrap;
+import jakarta.ws.rs.core.Application;
+import org.glassfish.jersey.server.ResourceConfig;
 
-import java.util.List;
+@ApplicationPath("")
+public class TaskServiceApplication extends Application {
 
-public class TaskServiceApplication extends Application<TaskServiceConfiguration> {
-    private static final List<BundleConfiguration> bundleConfigurationFactories = BundleConfigurationFactory.create();
+	public static void main(String[] args) throws InterruptedException {
+		long start = System.currentTimeMillis();
+		SeBootstrap.Configuration.Builder configBuilder = SeBootstrap.Configuration.builder();
+		configBuilder.property(SeBootstrap.Configuration.PROTOCOL, "HTTP")
+				.property(SeBootstrap.Configuration.HOST, "localhost")
+				.property(SeBootstrap.Configuration.PORT, 8080);
 
-    public static void main(String[] args) throws Exception {
-        new TaskServiceApplication().run(args);
-    }
+		ResourceConfig resourceConfig = new ResourceConfig();
+		resourceConfig.packages(TaskServiceApplication.class.getPackageName());
 
-    @Override
-    public String getName() {
-        return "Task service";
-    }
+		SeBootstrap.start(resourceConfig, configBuilder.build())
+				.thenAccept(instance -> System.out.println("Service started in(ms): " + (System.currentTimeMillis() - start)));
 
-    @Override
-    public void initialize(Bootstrap<TaskServiceConfiguration> bootstrap) {
-        // Enable variable substitution with environment variables
-        bootstrap.setConfigurationSourceProvider(
-                new SubstitutingSourceProvider(
-                        bootstrap.getConfigurationSourceProvider(),
-                        new EnvironmentVariableSubstitutor(false)
-                )
-        );
-
-        bundleConfigurationFactories.forEach(
-                c ->  bootstrap.addBundle(c.getConfiguredBundle())
-        );
-    }
-
-    @Override
-    public void run(TaskServiceConfiguration configuration, Environment environment) {
-        BundleConfigurationFactory.instantiate(bundleConfigurationFactories);
-        var dependencyInjectionBundle = new DependencyInjectionBundle(bundleConfigurationFactories);
-        dependencyInjectionBundle.run(configuration, environment);
-    }
+		Thread.currentThread().join();
+	}
 }
