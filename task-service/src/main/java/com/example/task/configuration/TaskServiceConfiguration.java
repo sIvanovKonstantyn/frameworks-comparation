@@ -12,12 +12,13 @@ import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.okhttp3.OkHttpSender;
 
 public class TaskServiceConfiguration {
+
     private static final Properties PROPERTIES = new Properties();
+
     static {
         try {
-            PROPERTIES.load(
-                TaskServiceConfiguration.class.getClassLoader().getResourceAsStream("application.properties")
-            );
+            PROPERTIES.load(TaskServiceConfiguration.class.getClassLoader()
+                .getResourceAsStream("application.properties"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -36,5 +37,9 @@ public class TaskServiceConfiguration {
             .build();
 
         return tracing.tracer();
+    }
+
+    public static Properties kafkaConnectionProperties() {
+        return PROPERTIES;
     }
 }
