@@ -1,7 +1,19 @@
 package com.example.user.repositories;
 
-import brave.Span;
-import brave.Tracer;
+import static com.example.user.configuration.UserServiceConfiguration.mongoUrl;
+import static com.example.user.configuration.UserServiceConfiguration.tracer;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.bson.BsonObjectId;
+import org.bson.BsonValue;
+import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
+
+import com.example.user.configuration.UserServiceConfiguration;
 import com.example.user.repositories.entities.UserEntity;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -9,29 +21,19 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.InsertOneResult;
-import org.bson.BsonObjectId;
-import org.bson.BsonValue;
-import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import brave.Span;
+import brave.Tracer;
+import jakarta.enterprise.context.ApplicationScoped;
 
-@Singleton
+@ApplicationScoped
 public class UserRepository {
-
     private final String mongoUrl;
     private final Tracer tracer;
 
-    @Inject
-    public UserRepository(@Named("mongoUrl") String mongoUrl, Tracer tracer) {
-        this.mongoUrl = mongoUrl;
-        this.tracer = tracer;
+    public UserRepository() {
+        this.mongoUrl = mongoUrl();
+        this.tracer = tracer();
     }
 
     public UserEntity save(UserEntity userEntity) {
@@ -79,12 +81,12 @@ public class UserRepository {
             collection.find().into(result);
 
             List<UserEntity> userEntities = result.stream()
-                    .map(d -> new UserEntity(
-                            d.getObjectId("_id").toString(),
-                            d.getString("name"),
-                            d.getList("taskIds", Long.class)
-                    ))
-                    .toList();
+                .map(d -> new UserEntity(
+                    d.getObjectId("_id").toString(),
+                    d.getString("name"),
+                    d.getList("taskIds", Long.class)
+                ))
+                .toList();
             trace.finish();
             return userEntities;
         }
@@ -108,12 +110,12 @@ public class UserRepository {
             collection.find(filter).into(result);
 
             Optional<UserEntity> userEntity = result.stream()
-                    .map(d -> new UserEntity(
-                            d.getObjectId("_id").toString(),
-                            d.getString("name"),
-                            d.getList("taskIds", Long.class)
-                    ))
-                    .findAny();
+                .map(d -> new UserEntity(
+                    d.getObjectId("_id").toString(),
+                    d.getString("name"),
+                    d.getList("taskIds", Long.class)
+                ))
+                .findAny();
             trace.finish();
             return userEntity;
         }

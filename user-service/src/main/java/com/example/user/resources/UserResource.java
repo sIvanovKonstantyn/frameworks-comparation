@@ -1,47 +1,45 @@
 package com.example.user.resources;
 
-import com.example.user.model.User;
-import com.example.user.model.UserTask;
-import com.example.user.services.UserService;
-import lombok.extern.slf4j.Slf4j;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.validation.Valid;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import java.util.List;
 
-@Singleton
+import com.example.user.model.User;
+import com.example.user.repositories.UserRepository;
+import com.example.user.repositories.entities.UserEntity;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
-@Slf4j
+@Consumes(MediaType.APPLICATION_JSON)
+@ApplicationScoped
 public class UserResource {
 
-    private final UserService userService;
-
     @Inject
-    public UserResource(UserService userService) {
-        this.userService = userService;
-    }
+    private UserRepository userRepository;
 
     @POST
-    public User save(@Valid User user) {
-        return userService.save(user);
+    public User save(User user) {
+        UserEntity savedUserEntity = new UserEntity(null, user.name(), user.taskIds());
+        savedUserEntity = userRepository.save(savedUserEntity);
+
+        return new User(
+            savedUserEntity.getId(),
+            savedUserEntity.getName(),
+            savedUserEntity.getTaskIds()
+        );
     }
 
     @GET
     public List<User> getAll() {
-        return userService.getAll();
-    }
-
-
-    @GET
-    @Path("/tasks")
-    public List<UserTask> getAllUsersTasks() {
-        return userService.getAllUsersTasks();
+        return userRepository.findAll().stream()
+            .map(e -> new User(e.getId(), e.getName(), e.getTaskIds()))
+            .toList();
     }
 }

@@ -1,48 +1,27 @@
 package com.example.user;
 
-import com.example.user.configuration.BundleConfiguration;
-import com.example.user.configuration.BundleConfigurationFactory;
-import com.example.user.configuration.UserServiceConfiguration;
-import com.example.user.configuration.UserServiceConfiguration.DependencyInjectionBundle;
-import io.dropwizard.Application;
-import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
-import io.dropwizard.configuration.SubstitutingSourceProvider;
-import io.dropwizard.setup.Bootstrap;
-import io.dropwizard.setup.Environment;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.SeBootstrap;
+import jakarta.ws.rs.core.Application;
 
-import java.util.List;
+import org.glassfish.jersey.server.ResourceConfig;
 
-public class UserServiceApplication extends Application<UserServiceConfiguration> {
-    private static final List<BundleConfiguration> bundleConfigurationFactories = BundleConfigurationFactory.create();
+@ApplicationPath("")
+public class UserServiceApplication {
+    public static void main(String[] args) throws InterruptedException {
+        long start = System.currentTimeMillis();
+        SeBootstrap.Configuration.Builder configBuilder = SeBootstrap.Configuration.builder();
+        configBuilder.property(SeBootstrap.Configuration.PROTOCOL, "HTTP")
+            .property(SeBootstrap.Configuration.HOST, "localhost")
+            .property(SeBootstrap.Configuration.PORT, 8081);
 
-    public static void main(String[] args) throws Exception {
-        new UserServiceApplication().run(args);
-    }
+        ResourceConfig resourceConfig = new ResourceConfig();
+        resourceConfig.packages(UserServiceApplication.class.getPackageName());
 
-    @Override
-    public String getName() {
-        return "User service";
-    }
+        SeBootstrap.start(resourceConfig, configBuilder.build())
+            .thenAccept(instance -> System.out.println("Service started in(ms): " + (System.currentTimeMillis() - start)));
 
-    @Override
-    public void initialize(Bootstrap<UserServiceConfiguration> bootstrap) {
-        // Enable variable substitution with environment variables
-        bootstrap.setConfigurationSourceProvider(
-                new SubstitutingSourceProvider(
-                        bootstrap.getConfigurationSourceProvider(),
-                        new EnvironmentVariableSubstitutor(false)
-                )
-        );
-
-        bundleConfigurationFactories.forEach(
-                c -> bootstrap.addBundle(c.getConfiguredBundle())
-        );
-    }
-
-    @Override
-    public void run(UserServiceConfiguration configuration, Environment environment) {
-        BundleConfigurationFactory.instantiate(bundleConfigurationFactories);
-        var dependencyInjectionBundle = new DependencyInjectionBundle(bundleConfigurationFactories);
-        dependencyInjectionBundle.run(configuration, environment);
+        Thread.currentThread()
+            .join();
     }
 }
