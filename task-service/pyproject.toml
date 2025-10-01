@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "task-service"
+version = "0.1.0"
+description = "Task service with Flask and OpenTelemetry"
+authors = ["Svosh <svosh2@example.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.9"
+flask = "^2.3.0"
+opentelemetry-api = "^1.20.0"
+opentelemetry-sdk = "^1.20.0"
+opentelemetry-exporter-otlp = "^1.20.0"
+opentelemetry-instrumentation-flask = "^0.41b0"
+opentelemetry-instrumentation-requests = "^0.41b0"
+opentelemetry-exporter-zipkin = "^1.37.0"
+
+[tool.poetry.group.dev.dependencies]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

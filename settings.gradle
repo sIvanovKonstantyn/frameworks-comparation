@@ -1,4 +1,0 @@
-rootProject.name = 'frameworks-comparation'
-include 'task-service'
-include 'user-service'
-
