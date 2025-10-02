@@ -15,12 +15,12 @@ if __name__ == "__main__":
     def run_server():
         app.run(debug=False, use_reloader=False)  # disable reloader for clean timing
 
-    # t = Thread(target=run_server)
-    # t.start()
-    run_server()
+    t = Thread(target=run_server)
+    t.start()
+    # run_server()
     # # Optional: wait a short moment for server to bind (approximation)
-    # time.sleep(0.2)
+    time.sleep(0.2)
 
-    # end_total = time.time()
-    # print(f"Total startup time (app + server ready): {end_total - start_total:.3f} seconds")
+    end_total = time.time()
+    print(f"Total startup time (app + server ready): {end_total - start_total:.3f} seconds")
     

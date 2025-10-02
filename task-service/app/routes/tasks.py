@@ -1,16 +1,16 @@
-from flask import Blueprint, jsonify
-from ..dto.task import Task
+from flask import Blueprint, jsonify, request
+from ..repository.task_repository import TaskRepository
 
 tasks_bp = Blueprint('tasks', __name__)
+task_repo = TaskRepository()
 
 @tasks_bp.route("/tasks", methods=["GET"])
 def get_tasks():
-    tasks = [
-        Task(id=1, description="task1", userId=1),
-        Task(id=2, description="task2", userId=2)
-    ]
-    return jsonify([task.__dict__ for task in tasks])
+    tasks = task_repo.get_all()
+    return jsonify([{"id": task.id, "description": task.description, "userId": task.userId} for task in tasks])
 
 @tasks_bp.route("/tasks", methods=["POST"])
 def create_task():
-    return "", 201
+    data = request.get_json()
+    task = task_repo.create(data['description'], data['userId'])
+    return jsonify({"id": task.id, "description": task.description, "userId": task.userId}), 201

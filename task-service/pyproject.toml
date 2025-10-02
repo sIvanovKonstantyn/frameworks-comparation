@@ -13,7 +13,13 @@ opentelemetry-sdk = "^1.20.0"
 opentelemetry-exporter-otlp = "^1.20.0"
 opentelemetry-instrumentation-flask = "^0.41b0"
 opentelemetry-instrumentation-requests = "^0.41b0"
+opentelemetry-instrumentation-sqlalchemy = "^0.41b0"
 opentelemetry-exporter-zipkin = "^1.37.0"
+sqlalchemy = "^2.0.0"
+psycopg2-binary = "^2.9.0"
+python-dotenv = "^1.0.0"
+flask-sqlalchemy = "^3.0.0"
+setuptools = "<81"
 
 [tool.poetry.group.dev.dependencies]
 
