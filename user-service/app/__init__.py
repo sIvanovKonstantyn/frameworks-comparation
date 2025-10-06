@@ -4,24 +4,21 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.zipkin.json import ZipkinExporter
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
-from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
+from opentelemetry.instrumentation.pymongo import PymongoInstrumentor
 from .config import Config
-from .database import db
-from .services.kafka_service import kafka_service
-
+from .database import mongo
+from .services.kafka_consumer import kafka_consumer
+from .clients.task_service_client import task_service_client
 
 def create_app():
-    from .routes.tasks import tasks_bp
+    from .routes.users import users_bp
     
     # Create Flask app
     app = Flask(__name__)
     app.config.from_object(Config)
     
-    # Initialize database
-    db.init_app(app)
-    
-    # Initialize Kafka service
-    kafka_service.init_app(app)
+    # Initialize MongoDB
+    mongo.init_app(app)
     
     # Configure OpenTelemetry
     trace.set_tracer_provider(TracerProvider())
@@ -29,17 +26,19 @@ def create_app():
     span_processor = BatchSpanProcessor(zipkin_exporter)
     trace.get_tracer_provider().add_span_processor(span_processor)
     
-    # Instrument Flask
+    # Instrument Flask and PyMongo
     FlaskInstrumentor().instrument_app(app)
+    PymongoInstrumentor().instrument()
     
-    # Create tables and instrument SQLAlchemy
-    with app.app_context():
-        db.create_all()
-        SQLAlchemyInstrumentor().instrument(engine=db.engine)
-
+    # Initialize task service client
+    task_service_client.init_app(app)
+    
+    # Initialize and start Kafka consumer
+    kafka_consumer.init_app(app)
+    kafka_consumer.start_consuming()
     
     # Register blueprints
-    app.register_blueprint(tasks_bp)
+    app.register_blueprint(users_bp)
     
     return app
 

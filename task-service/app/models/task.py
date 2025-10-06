@@ -5,4 +5,4 @@ class Task(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(255), nullable=False)
-    userId = db.Column(db.Integer, nullable=False)
+    userId = db.Column(db.String(255), nullable=False)

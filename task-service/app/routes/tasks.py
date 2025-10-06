@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from ..repository.task_repository import TaskRepository
+from ..services.kafka_service import kafka_service
 
 tasks_bp = Blueprint('tasks', __name__)
 task_repo = TaskRepository()
@@ -13,4 +14,8 @@ def get_tasks():
 def create_task():
     data = request.get_json()
     task = task_repo.create(data['description'], data['userId'])
+    
+    # Publish task data to Kafka asynchronously
+    kafka_service.publish_task_async(task.id, task.description, task.userId)
+    
     return jsonify({"id": task.id, "description": task.description, "userId": task.userId}), 201

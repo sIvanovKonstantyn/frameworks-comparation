@@ -5,4 +5,4 @@ from typing import Optional
 class Task:
     id: Optional[int]
     description: str
-    userId: int
+    userId: str
