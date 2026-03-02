@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS tasks (
+    id VARCHAR(100) PRIMARY KEY,
+    description TEXT NOT NULL,
+    userId VARCHAR(100) NOT NULL
+);

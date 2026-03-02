@@ -1,0 +1,12 @@
+[database]
+url = "jdbc:postgresql://localhost:5432/tasks"
+user = "postgres"
+password = "postgres"
+
+[tracing]
+serviceName = "task-service"
+zipkinUrl = "http://localhost:9411/api/v2/spans"
+
+[kafka]
+bootstrapServers = "localhost:9092"
+topic = "task-events"
