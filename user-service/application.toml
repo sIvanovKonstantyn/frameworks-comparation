@@ -1,0 +1,14 @@
+[tracing]
+serviceName = "user-service"
+zipkinUrl = "http://localhost:9411/api/v2/spans"
+
+[mongo]
+uri = "mongodb://localhost:27017"
+database = "users"
+
+[kafka]
+bootstrapServers = "localhost:9092"
+topic = "task-events"
+
+[taskService]
+url = "http://localhost:8080"
