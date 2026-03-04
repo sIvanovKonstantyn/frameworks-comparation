@@ -17,7 +17,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./task-service/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
   zipkin:
     image: ghcr.io/openzipkin/zipkin-slim
     container_name: zipkin

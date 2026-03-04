@@ -2,6 +2,7 @@ package com.example.task;
 
 import com.example.task.db.JdbcFactory;
 import com.example.task.event.KafkaFactory;
+import com.example.task.tracing.TracingFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -47,7 +48,7 @@ public class App {
                 System.exit(1);
             })
             .onSuccess(config -> {
-                var tracer = com.example.task.tracing.TracingFactory.create(config.serviceName(), config.zipkinUrl());
+                var tracer = TracingFactory.create(config.serviceName(), config.zipkinUrl());
                 var jdbc = JdbcFactory.create(config, tracer);
                 var eventPublisher = KafkaFactory.createPublisher(config.kafkaBootstrapServers(), config.kafkaTopic(), tracer);
                 var taskSlice = TaskSlice.taskSlice(jdbc, eventPublisher);
